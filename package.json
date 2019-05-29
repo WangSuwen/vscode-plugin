@@ -1,0 +1,63 @@
+{
+	"name": "vscode-plugin",
+	"displayName": "vscode-plugin",
+	"publisher": "wxq",
+	"description": "",
+	"version": "0.0.1",
+	"repository": "",
+	"engines": {
+		"vscode": "^1.34.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.helloWorld",
+		"onCommand:extension.niHao"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.helloWorld",
+				"title": "Hello World"
+			},
+			{
+				"command": "extension.niHao",
+				"title": "NI HAO"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Code插件demo",
+			"properties": {
+				"vscodePluginDemo.imgPath": {
+					"type": "string",
+					"default": "/Users/wxq/Downloads/诛仙老图片/e5ea70f0f736afc34e4fcd70be19ebc4b645128d.jpg",
+					"description": "图片地址(文件的磁盘地址)"
+				},
+				"vscodePluginDemo.yourName": {
+					"type": "string",
+					"default": "guest",
+					"description": "姓名"
+				},
+				"vscodePluginDemo.showTip": {
+					"type": "boolean",
+					"default": true,
+					"description": "启动时显示自定义欢迎页"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "node ./node_modules/vscode/bin/test"
+	},
+	"devDependencies": {
+		"typescript": "^3.3.1",
+		"vscode": "^1.1.28",
+		"eslint": "^5.13.0",
+		"@types/node": "^10.12.21",
+		"@types/mocha": "^2.2.42"
+	}
+}
