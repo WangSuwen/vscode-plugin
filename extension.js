@@ -32,7 +32,7 @@ function activate(context) {
 	let snippets2 = vscode.commands.registerCommand('extension.niHao', function () {
 		const panel = vscode.window.createWebviewPanel(
 			'testWebview', // viewType
-			"(づ￣3￣)づ╭❤～亲，保重身体哦", // 视图标题
+			config.tabTitle || '(づ￣3￣)づ╭❤～亲，保重身体哦', // 视图标题
 			vscode.ViewColumn.One, // 显示在编辑器的哪个部位
 			{
 				enableScripts: true, // 启用JS，默认禁用
@@ -40,10 +40,7 @@ function activate(context) {
 			}
 		);
 		readAndWriteUserCostumImgs(context, config.imgsPath);
-		const html = fs.readFileSync(path.join(__dirname, './views/index.html'))
-			.toString()
-			.replace(/\{\{customTips01\}\}/, config.customTips01 || '亲，您已经工作很久了，起来活动一下吧')
-			.replace(/\{\{imgPath\}\}/, getRandomImg(context, config.imgsPath));
+		const html = readHtml(context, config);
 		panel.webview.html = html;
 	});
 	// 定时任务
@@ -56,6 +53,34 @@ function activate(context) {
 		ti = imgChangeInterval(config, context);
 	});
 	context.subscriptions.push(snippets1, snippets2);
+}
+
+/**
+ * 读取 html文件
+ * @param {*} context 
+ * @param {*} config 
+ */
+function readHtml (context, config) {
+	return fs.readFileSync(path.join(__dirname, './views/index.html'))
+			.toString()
+			.replace(/\{\{customHiTipsStyle01\}\}/, `style="${formatStyle(config.customHiTipsStyle01)}"`)
+			.replace(/\{\{customImgStyle01\}\}/, `style="${formatStyle(config.customImgStyle01)}"`)
+			.replace(/\{\{customTips01\}\}/, config.customTips01 || '亲，您已经工作很久了，起来活动一下吧')
+			.replace(/\{\{imgPath\}\}/, getRandomImg(context, config.imgsPath));
+}
+
+/**
+ * 格式化 用户自定义的样式表
+ * @param {*} customStyle 
+ */
+function formatStyle (customStyle) {
+	let styl = '';
+	for (let k in customStyle) {
+		if (customStyle.hasOwnProperty(k)) {
+			styl += `${k}: ${customStyle[k]};`
+		}
+	}
+	return styl;
 }
 
 /**
@@ -119,7 +144,7 @@ function imgChangeInterval (config, context) {
 	return setInterval(() => {
 		const panel = vscode.window.createWebviewPanel(
 			'testWebview', // viewType
-			"(づ￣3￣)づ╭❤～亲，保重身体", // 视图标题
+			config.tabTitle || '(づ￣3￣)づ╭❤～亲，保重身体哦', // 视图标题
 			vscode.ViewColumn.One, // 显示在编辑器的哪个部位
 			{
 				enableScripts: true, // 启用JS，默认禁用
@@ -127,10 +152,7 @@ function imgChangeInterval (config, context) {
 			}
 		);
 		readAndWriteUserCostumImgs(context, config.imgsPath);
-		const html = fs.readFileSync(path.join(__dirname, './views/index.html'))
-			.toString()
-			.replace(/\{\{customTips01\}\}/, config.customTips01 || '亲，您已经工作很久了，起来活动一下吧')
-			.replace(/\{\{imgPath\}\}/, getRandomImg(context, config.imgsPath));
+		const html = readHtml(context, config);
 		panel.webview.html = html;
 	}, interval_time);
 }
