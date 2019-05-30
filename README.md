@@ -1,4 +1,10 @@
-## 配置文件示例：
+## 一、功能介绍
+* 自定义多张背景图片、图片样式
+* 自定义问候语、问候语样式
+* 自定义新Tab弹出时间间隔（以秒为单位）
+* 自定义Tab文案
+
+## 二、配置文件示例：
 ```
 "forYourHealth.intervalTime": "1800",
 "forYourHealth.imgsPath": [

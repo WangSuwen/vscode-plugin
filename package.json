@@ -1,13 +1,14 @@
 {
 	"name": "vscode-plugin",
-	"displayName": "vscode-plugin",
-	"publisher": "wxq",
-	"description": "",
-	"version": "0.0.6",
+	"displayName": "love yourself！❤️",
+	"publisher": "RX",
+	"description": "自定义图片、定时任务间隔",
+	"version": "0.0.9",
 	"repository": "",
 	"engines": {
 		"vscode": "^1.10.0"
 	},
+	"icon": "WX20190520-144711@2x.png",
 	"categories": [
 		"Other"
 	],
