@@ -28,27 +28,27 @@
 		],
 		"configuration": {
 			"type": "object",
-			"title": "Code插件demo",
+			"title": "亲，保重身体(づ￣3￣)づ╭❤～",
 			"properties": {
-				"vscodePluginDemo.imgPath": {
-					"type": "string",
-					"default": "",
+				"forYourHealth.imgsPath": {
+					"type": "array",
+					"default": [],
 					"description": "图片地址(文件的磁盘地址)，例子：/Users/xxx/Downloads/demo.jpg"
 				},
-				"vscodePluginDemo.intervalTime": {
+				"forYourHealth.intervalTime": {
 					"type": "string",
 					"default": 3600,
 					"description": "图片弹出的时间间隔，以 “秒” 为单位"
 				},
-				"vscodePluginDemo.yourName": {
+				"forYourHealth.yourName": {
 					"type": "string",
 					"default": "guest",
 					"description": "姓名"
 				},
-				"vscodePluginDemo.showTip": {
-					"type": "boolean",
-					"default": true,
-					"description": "启动时显示自定义欢迎页"
+				"forYourHealth.customTips01": {
+					"type": "string",
+					"default": "亲，你已经工作很久了，起来活动一下吧",
+					"description": "自定义问候语"
 				}
 			}
 		}

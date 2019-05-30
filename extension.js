@@ -10,41 +10,48 @@ const fs = require('fs');
 /**
  * @param {vscode.ExtensionContext} context
  */
+let interval_time = 5000; // 定时任务时间间隔
 function activate(context) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "vscode-plugin" is now active!');
-	// 获取用户  自定义配置
-	let config = vscode.workspace.getConfiguration('vscodePluginDemo');
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
+	/**
+	 * 获取用户  自定义配置
+	 * config: {
+	 * 		imgsPath: 用户配置的图片地址们；
+	 * 		intervalTime: 定时任务 时长
+	 * 		yourName: 用户自定义姓名
+	 * 		customTips01: 用户自定义问候语
+	 * }
+	 * TODO: 注释：配置项的前缀 forYourHealth 必须与package.json 中 contributes.configuration.properties 中的各配置项相对应。
+	 */
+	let config = vscode.workspace.getConfiguration('forYourHealth');
+	interval_time = Number(config.intervalTime) <= 5 ? 5 * 1000 : config.intervalTime * 1000;
 	let snippets1 = vscode.commands.registerCommand('extension.helloWorld', function () {
 		vscode.window.showInformationMessage('Hello World!');
 	});
+	// 手动输入指令
 	let snippets2 = vscode.commands.registerCommand('extension.niHao', function () {
 		const panel = vscode.window.createWebviewPanel(
 			'testWebview', // viewType
-			"新Tab", // 视图标题
+			"(づ￣3￣)づ╭❤～亲，保重身体哦", // 视图标题
 			vscode.ViewColumn.One, // 显示在编辑器的哪个部位
 			{
 				enableScripts: true, // 启用JS，默认禁用
 				retainContextWhenHidden: true, // webview被隐藏时保持状态，避免被重置
 			}
 		);
-		panel.webview.html = `
-			<html>
-				<body>
-					<img src="${getExtensionFileVscodeResource(context, config.imgPath)}"/>
-				</body>
-			</html>
-		`;
+		readAndWriteUserCostumImgs(context, config.imgsPath);
+		const html = fs.readFileSync(path.join(__dirname, './views/index.html'))
+			.toString()
+			.replace(/\{\{customTips01\}\}/, config.customTips01 || '亲，您已经工作很久了，起来活动一下吧')
+			.replace(/\{\{imgPath\}\}/, getRandomImg(context, config.imgsPath));
+		panel.webview.html = html;
 	});
 	// 定时任务
 	let ti = imgChangeInterval(config, context);
+	// 监听 用户配置项的变动
 	vscode.workspace.onDidChangeConfiguration(() => {
-		config = vscode.workspace.getConfiguration('vscodePluginDemo');
+		config = vscode.workspace.getConfiguration('forYourHealth');
+		interval_time = Number(config.intervalTime) <= 5 ? 5 * 1000 : config.intervalTime * 1000;
 		clearInterval(ti);
 		ti = imgChangeInterval(config, context);
 	});
@@ -52,27 +59,80 @@ function activate(context) {
 }
 
 /**
- * 图片变换 interval
+ * 将用户配置的图片列表写入到本地
+ * @param {*} context 
+ * @param {Array} userImgs 
+ */
+function readAndWriteUserCostumImgs (context, userImgs) {
+	if (userImgs.length) {
+		let img;
+		for (let i = 0; i < userImgs.length; i++) {
+			try {
+				img = fs.readFileSync(userImgs[i]);
+			} catch (e) {
+				console.error('读文件时报错了：', e);
+			}
+			try {
+				fs.writeFileSync(path.join(context.extensionPath, `./imgs/custom_${i + 1}.jpg`), img);
+			} catch (e) {
+				console.error('写文件时报错了：', e);
+			}
+		}
+	}
+}
+
+/**
+ * 获取指定范围的随机整数
+ * @param {*} lowerValue 最小
+ * @param {*} upperValue 最大
+ */
+function randomFrom (lowerValue, upperValue) {
+	return Math.floor(Math.random() * (upperValue - lowerValue + 1) + lowerValue);
+}
+/**
+ * 随机获取一张图片
+ * @param {*} context 
+ * @param {Array} userImgs 
+ */
+function getRandomImg (context, userImgs) {
+	let diskPath;
+	if (!userImgs.length) {
+		diskPath = vscode.Uri.file(path.join(context.extensionPath, './imgs/custom.jpg'));
+	} else {
+		const len = userImgs.length;
+		
+		const ind = randomFrom(1, len);
+		if (ind > len) {
+			diskPath = vscode.Uri.file(path.join(context.extensionPath, `./imgs/custom_${1}.jpg`));
+		} else {
+			diskPath = vscode.Uri.file(path.join(context.extensionPath, `./imgs/custom_${Math.abs(ind)}.jpg`));
+		}
+	}
+	const dp = diskPath.with({ scheme: 'vscode-resource' }).toString();
+	return dp;
+}
+
+/**
+ * 图片变换 的定时任务
  */
 function imgChangeInterval (config, context) {
 	return setInterval(() => {
 		const panel = vscode.window.createWebviewPanel(
 			'testWebview', // viewType
-			"新Tab", // 视图标题
+			"(づ￣3￣)づ╭❤～亲，保重身体", // 视图标题
 			vscode.ViewColumn.One, // 显示在编辑器的哪个部位
 			{
 				enableScripts: true, // 启用JS，默认禁用
 				retainContextWhenHidden: true, // webview被隐藏时保持状态，避免被重置
 			}
 		);
-		panel.webview.html = `
-			<html>
-				<body>
-					<img src="${getExtensionFileVscodeResource(context, config.imgPath)}"/>
-				</body>
-			</html>
-		`;
-	}, Number(config.intervalTime) <= 5 ? 5 * 1000 : config.intervalTime * 1000);
+		readAndWriteUserCostumImgs(context, config.imgsPath);
+		const html = fs.readFileSync(path.join(__dirname, './views/index.html'))
+			.toString()
+			.replace(/\{\{customTips01\}\}/, config.customTips01 || '亲，您已经工作很久了，起来活动一下吧')
+			.replace(/\{\{imgPath\}\}/, getRandomImg(context, config.imgsPath));
+		panel.webview.html = html;
+	}, interval_time);
 }
 
 /**
@@ -83,7 +143,7 @@ function imgChangeInterval (config, context) {
 function getExtensionFileVscodeResource (context, imgPath) {
 	let img;
 	if (!imgPath) {
-		imgPath = path.join(__dirname, './imgs/custom.jpg');
+		imgPath = path.join(context.extensionPath, './imgs/custom.jpg');
 	}
 	try {
 		img = fs.readFileSync(imgPath);
