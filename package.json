@@ -12,8 +12,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld",
-		"onCommand:extension.niHao"
+		"*"
 	],
 	"main": "./extension.js",
 	"contributes": {
@@ -33,8 +32,13 @@
 			"properties": {
 				"vscodePluginDemo.imgPath": {
 					"type": "string",
-					"default": "/Users/wxq/Downloads/诛仙老图片/e5ea70f0f736afc34e4fcd70be19ebc4b645128d.jpg",
-					"description": "图片地址(文件的磁盘地址)"
+					"default": "",
+					"description": "图片地址(文件的磁盘地址)，例子：/Users/xxx/Downloads/demo.jpg"
+				},
+				"vscodePluginDemo.intervalTime": {
+					"type": "string",
+					"default": 3600,
+					"description": "图片弹出的时间间隔，以 “秒” 为单位"
 				},
 				"vscodePluginDemo.yourName": {
 					"type": "string",
@@ -51,7 +55,8 @@
 	},
 	"scripts": {
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "node ./node_modules/vscode/bin/test"
+		"test": "node ./node_modules/vscode/bin/test",
+		"build": "vsce package"
 	},
 	"devDependencies": {
 		"typescript": "^3.3.1",
