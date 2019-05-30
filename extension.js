@@ -72,7 +72,7 @@ function imgChangeInterval (config, context) {
 				</body>
 			</html>
 		`;
-	}, config.intervalTime * 1000);
+	}, Number(config.intervalTime) <= 5 ? 5 * 1000 : config.intervalTime * 1000);
 }
 
 /**

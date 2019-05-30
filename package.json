@@ -3,7 +3,7 @@
 	"displayName": "vscode-plugin",
 	"publisher": "wxq",
 	"description": "",
-	"version": "0.0.1",
+	"version": "0.0.3",
 	"repository": "",
 	"engines": {
 		"vscode": "^1.34.0"
