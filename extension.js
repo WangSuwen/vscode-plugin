@@ -30,18 +30,7 @@ function activate(context) {
 	});
 	// 手动输入指令
 	let snippets2 = vscode.commands.registerCommand('extension.niHao', function () {
-		const panel = vscode.window.createWebviewPanel(
-			'testWebview', // viewType
-			config.tabTitle || '(づ￣3￣)づ╭❤～亲，保重身体哦', // 视图标题
-			vscode.ViewColumn.One, // 显示在编辑器的哪个部位
-			{
-				enableScripts: true, // 启用JS，默认禁用
-				retainContextWhenHidden: true, // webview被隐藏时保持状态，避免被重置
-			}
-		);
-		Utils.readAndWriteUserCostumImgs(context, config.imgsPath);
-		const html = Utils.readHtml(context, config);
-		panel.webview.html = html;
+		Utils.initPanel(config, context);
 	});
 	// 定时任务
 	let ti = Utils.imgChangeInterval(config, context, interval_time);

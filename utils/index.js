@@ -2,13 +2,17 @@ const path = require('path');
 const fs = require('fs');
 const vscode = require('vscode');
 
+let panel;
+// 获取当前 已打开的webview 所在的列
+const columnToShowIn = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn: undefined;
+
 const Utils = {
-    /**
-     * 图片变换 的定时任务
-     */
-    imgChangeInterval (config, context, interval_time) {
-        return setInterval(() => {
-            const panel = vscode.window.createWebviewPanel(
+    initPanel (config, context) {
+        // 若当前有已打开的webview，则将其置于最上层；若无，则新建一个。
+        if (panel) {
+            panel.reveal(columnToShowIn);
+        } else {
+            panel = vscode.window.createWebviewPanel(
                 'testWebview', // viewType
                 config.tabTitle || '(づ￣3￣)づ╭❤～亲，保重身体哦', // 视图标题
                 vscode.ViewColumn.One, // 显示在编辑器的哪个部位
@@ -17,9 +21,21 @@ const Utils = {
                     retainContextWhenHidden: true, // webview被隐藏时保持状态，避免被重置
                 }
             );
-            this.readAndWriteUserCostumImgs(context, config.imgsPath);
-            const html = this.readHtml(context, config);
-            panel.webview.html = html;
+        }
+        this.readAndWriteUserCostumImgs(context, config.imgsPath);
+        const html = this.readHtml(context, config);
+        panel.webview.html = html;
+        // 监听  webview的 销毁事件
+        panel.onDidDispose(() => {
+            panel = undefined;
+        }, null, context.subscriptions);
+    },
+    /**
+     * 图片变换 的定时任务
+     */
+    imgChangeInterval (config, context, interval_time) {
+        return setInterval(() => {
+            this.initPanel(config, context);
         }, interval_time);
     },
     /**
